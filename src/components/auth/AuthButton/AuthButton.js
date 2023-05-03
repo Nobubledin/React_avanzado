@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom';
 import T from 'prop-types';
 
 import { ConfirmationButton } from '../../common';
-import { AuthConsumer } from '../context';
 import { logout } from '../service';
 import useMutation from '../../../hooks/useMutation';
+import { useAuth } from '../context';
 
-const AuthButton = ({ handleLogout, isLogged }) => {
+const AuthButton = () => {
+  const { isLogged, handleLogout } = useAuth();
   const mutation = useMutation(logout);
 
   const handleLogoutConfirm = async () => {
@@ -35,8 +36,4 @@ AuthButton.defaultProps = {
   isLogged: false,
 };
 
-const ConnectedAuthButton = props => (
-  <AuthConsumer>{auth => <AuthButton {...auth} {...props} />}</AuthConsumer>
-);
-
-export default ConnectedAuthButton;
+export default AuthButton;
