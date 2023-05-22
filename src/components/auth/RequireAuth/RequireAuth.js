@@ -1,10 +1,10 @@
 import T from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
 
-import { useAuthContext } from '../context';
+import { useAuth } from '../context';
 
 const RequireAuth = ({ children }) => {
-  const { isLogged } = useAuthContext();
+  const { isLogged } = useAuth();
   const location = useLocation();
 
   if (!isLogged) {
