@@ -3,6 +3,7 @@ import T from 'prop-types';
 import useForm from '../../../hooks/useForm';
 import { InputFile } from '../../common';
 import SelectTags from '../SelectTags';
+import { useRef } from 'react';
 
 const validName = ({ name }) => name;
 const validPrice = ({ price }) =>
@@ -20,12 +21,23 @@ function NewAdvertForm({ onSubmit, isLoading }) {
     sale: true,
     price: 0,
     tags: [],
-    photo: null,
   });
+  // Managing the input "outside of form", just with a ref, to avoid rerender
+  const photoRef = useRef(null);
   const { name, sale, price, tags } = advert;
 
+  const handlePhotoChange = ev => {
+    // Store selected file in ref
+    photoRef.current = ev.target.files[0];
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit(advert =>
+        // Merge all form data with image from ref
+        onSubmit({ ...advert, photo: photoRef.current }),
+      )}
+    >
       <input name="name" value={name} onChange={handleChange} />
       <input
         type="checkbox"
@@ -35,8 +47,13 @@ function NewAdvertForm({ onSubmit, isLoading }) {
       />
       <input type="number" name="price" value={price} onChange={handleChange} />
       <SelectTags name="tags" value={tags} onChange={handleChange} />
-      <InputFile name="photo" onChange={handleChange} />
+      <InputFile name="photo" onChange={handlePhotoChange} />
       <button
+        // button disabled if:
+        // empty name
+        // not finite number price
+        // zero tags selected
+        // isLoading
         disabled={!validate(validName, validPrice, validTags, () => !isLoading)}
       >
         Save
